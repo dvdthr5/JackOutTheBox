@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { socket } from "../socket/socket";
+import { useNavigate } from "react-router-dom";
 
 export default function Play() {
+  const navigate = useNavigate();
+
   const [roomId, setRoomId] = useState("");
   const [name, setName] = useState("");
-  const [room, setRoom] = useState(null);
+  const [joinedRoomId, setJoinedRoomId] = useState("");
   const [err, setErr] = useState("");
 
   useEffect(() => {
-    const onState = (state) => setRoom(state);
+    const onState = (state) => {
+      // When the server broadcasts room state, assume we are in that room
+      setJoinedRoomId(state.roomId);
+    };
     const onError = (e) => setErr(e?.message || "Error");
 
     socket.on("room:state", onState);
@@ -21,21 +27,34 @@ export default function Play() {
   }, []);
 
   return (
-    <div>
-      <h2>Player</h2>
+    <div style={{ maxWidth: 520, margin: "0 auto", paddingTop: 24 }}>
+      <button onClick={() => navigate("/")}>Back</button>
 
-      <div style={{ display: "grid", gap: 8, maxWidth: 320 }}>
-        <input
-          placeholder="Room code"
-          value={roomId}
-          onChange={(e) => setRoomId(e.target.value.toUpperCase())}
-        />
-        <input
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
+      <h2 style={{ marginTop: 12 }}>Join a Game</h2>
+
+      <div style={{ display: "grid", gap: 10, marginTop: 12 }}>
+        <label>
+          Room Code
+          <input
+            style={{ width: "100%", padding: 10, marginTop: 4 }}
+            placeholder="ABC123"
+            value={roomId}
+            onChange={(e) => setRoomId(e.target.value.toUpperCase())}
+          />
+        </label>
+
+        <label>
+          Your Name
+          <input
+            style={{ width: "100%", padding: 10, marginTop: 4 }}
+            placeholder="David"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </label>
+
         <button
+          style={{ padding: 12, cursor: "pointer" }}
           onClick={() => {
             setErr("");
             socket.emit("room:join", { roomId: roomId.trim(), name });
@@ -47,15 +66,10 @@ export default function Play() {
 
       {err && <p style={{ color: "crimson" }}>{err}</p>}
 
-      {room && (
-        <div style={{ marginTop: 12 }}>
-          <div>
-            <b>Joined:</b> {room.roomId}
-          </div>
-          <div>
-            <b>Players:</b> {room.players.length}
-          </div>
-        </div>
+      {joinedRoomId && (
+        <p style={{ marginTop: 14 }}>
+          Joined room <b>{joinedRoomId}</b>. Waiting for host.
+        </p>
       )}
     </div>
   );

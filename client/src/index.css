@@ -1,0 +1,61 @@
+/* Reset */
+:root {
+  --bg: #F3F4F4;
+  --text: #2C2C2C;
+
+  --primary: #612D53;
+  --primary-hover: #853953;
+
+  --card: #ffffff;
+  --border: rgba(44, 44, 44, 0.12);
+  --shadow: 0 6px 18px rgba(44, 44, 44, 0.12);
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+button {
+  background: var(--primary);
+  color: var(--bg);
+  border: none;
+  padding: 12px 16px;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+  transition: background 0.2s ease, transform 0.05s ease;
+}
+
+button:hover {
+  background: var(--primary-hover);
+}
+
+button:active {
+  transform: translateY(1px);
+}
+
+input {
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  font-size: 16px;
+  outline: none;
+  background: var(--card);
+  color: var(--text);
+}
+
+input:focus {
+  border-color: var(--primary-hover);
+  box-shadow: 0 0 0 3px rgba(133, 57, 83, 0.18);
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: var(--shadow);
+}

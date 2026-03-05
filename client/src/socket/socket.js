@@ -1,7 +1,9 @@
 import { io } from "socket.io-client";
 
-const SERVER_URL = "http://localhost:3001";
+const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
-export const socket = io(SERVER_URL, {
-  autoConnect: true
-});
+if (!SERVER_URL) {
+  throw new Error("Missing VITE_SERVER_URL. Create client/.env and set it.");
+}
+
+export const socket = io(SERVER_URL, { autoConnect: true });
