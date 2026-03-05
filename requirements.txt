@@ -1,0 +1,12 @@
+# Server dependencies
+express
+socket.io
+cors
+nodemon
+
+# Client dependencies
+react
+react-dom
+react-router-dom
+socket.io-client
+vite
