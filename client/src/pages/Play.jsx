@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { socket } from "../socket/socket";
+import { useNavigate } from "react-router-dom";
 
 export default function Play() {
+  const navigate = useNavigate();
   const [roomId, setRoomId] = useState("");
   const [name, setName] = useState("");
-  const [room, setRoom] = useState(null);
+  const [joinedRoomId, setJoinedRoomId] = useState("");
   const [err, setErr] = useState("");
 
   useEffect(() => {
-    const onState = (state) => setRoom(state);
+    const onState = (state) => setJoinedRoomId(state.roomId);
     const onError = (e) => setErr(e?.message || "Error");
 
     socket.on("room:state", onState);
@@ -21,42 +23,58 @@ export default function Play() {
   }, []);
 
   return (
-    <div>
-      <h2>Player</h2>
+    <div className="page">
+      <div className="page-center">
+        <div className="actions">
+          <button onClick={() => navigate("/")}>Back Home</button>
+        </div>
 
-      <div style={{ display: "grid", gap: 8, maxWidth: 320 }}>
-        <input
-          placeholder="Room code"
-          value={roomId}
-          onChange={(e) => setRoomId(e.target.value.toUpperCase())}
-        />
-        <input
-          placeholder="Name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
-        <button
-          onClick={() => {
-            setErr("");
-            socket.emit("room:join", { roomId: roomId.trim(), name });
-          }}
-        >
-          Join
-        </button>
-      </div>
+        <h1 className="hero-title">Join a Game</h1>
+        <p className="subtitle">
+          Enter the room code from the host screen and your name.
+        </p>
 
-      {err && <p style={{ color: "crimson" }}>{err}</p>}
+        <div className="card" style={{ maxWidth: "520px" }}>
+          <div className="stack">
+            <div>
+              <p className="label">Room Code</p>
+              <input
+                placeholder="ABCDE"
+                value={roomId}
+                onChange={(e) => setRoomId(e.target.value.toUpperCase())}
+              />
+            </div>
 
-      {room && (
-        <div style={{ marginTop: 12 }}>
-          <div>
-            <b>Joined:</b> {room.roomId}
-          </div>
-          <div>
-            <b>Players:</b> {room.players.length}
+            <div>
+              <p className="label">Your Name</p>
+              <input
+                placeholder="David"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+
+            <button
+              onClick={() => {
+                setErr("");
+                socket.emit("room:join", { roomId: roomId.trim(), name });
+              }}
+            >
+              Join Room
+            </button>
           </div>
         </div>
-      )}
+
+        {err && <p style={{ color: "crimson", marginTop: "16px" }}>{err}</p>}
+
+        {joinedRoomId && (
+          <div className="card" style={{ marginTop: "20px", maxWidth: "520px" }}>
+            <p>
+              Joined room <strong>{joinedRoomId}</strong>. Waiting for host.
+            </p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
